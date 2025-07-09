@@ -2,7 +2,9 @@ package com.auto.mailer.controller;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +40,18 @@ public class Test {
 	@Value("${auto.mailer.gsheets.id}")
 	private String sheetId;
 
+	@Value("${auto.mailer.resume.path}")
+	private String resumePath;
+
+	@Value("${auto.mailer.ik.mail.id}")
+	private String ikMailId;
+
+	@Value("${auto.mailer.kk.mail.id}")
+	private String kkMailId;
+
+	@Value("${auto.mailer.ck.mail.id}")
+	private String ckMailId;
+
 	@GetMapping("/")
 	public String test() {
 		return "hello";
@@ -45,8 +59,12 @@ public class Test {
 
 	@GetMapping("/testMail")
 	public String testMail() {
-		emailService.sendEmail("test@gmail.com", "test@gmail.com", "You Have Won 1 Crore Lottery ",
-				"You Have Won 1 Crore Lottery");
+		Map<String, String> paramsMap = new HashMap<>();
+
+		paramsMap.put("tech_skills", "Java, Spring Boot, Microservices,Rest API, SQL, JavaScript");
+		paramsMap.put("company_name", "Google");
+
+		emailService.sendEmail(ikMailId, kkMailId, resumePath, paramsMap);
 		return "mail send";
 
 	}
@@ -62,8 +80,6 @@ public class Test {
 //		logger.info("This will run every one minutes");
 //	}
 
-//	dummy sheets api call
-
 	@GetMapping("/readFromSheets")
 	public List<List<Object>> readGSheets() throws IOException, GeneralSecurityException {
 		ValueRange response = null;
@@ -76,10 +92,17 @@ public class Test {
 
 			logger.info("Data From Google Sheets" + response.getValues());
 		} catch (Exception e) {
+			logger.error("Error Occured");
 		}
 
 		return response.getValues();
 
 	}
+
+//	mail trigger if successfully shoot / failure (phase 2)
+//  read only specified records (configurable - top 10)
+//	connect all features and test all in once
+//	R&D about the deployment in window service/aws
+//	read only the inserted values flag based (last)
 
 }
