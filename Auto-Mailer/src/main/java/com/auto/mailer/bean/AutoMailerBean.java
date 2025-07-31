@@ -22,7 +22,7 @@ public class AutoMailerBean {
 	String companyName;
 	String techSkills;
 	String mobileNumber;
-	Boolean isStoredInDB;
-	Boolean isMailSent;
+	String isStoredInDB;
+	String isMailSent;
 
 }

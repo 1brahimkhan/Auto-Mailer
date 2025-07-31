@@ -2,6 +2,7 @@ package com.auto.mailer.controller;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,18 @@ public class Test {
 	@Value("${auto.mailer.ck.mail.id}")
 	private String ckMailId;
 
+	@Value("${auto.mailer.max.mail.shot.limit}")
+	private Integer maxMailShootLimit;
+
+	@Value("${auto.mailer.linkedin}")
+	private String linkedin;
+
+	@Value("${auto.mailer.github}")
+	private String github;
+
+	@Value("${auto.mailer.mobile}")
+	private String ibMobileNo;
+
 	@GetMapping("/")
 	public String test() {
 		return "hello";
@@ -83,6 +96,7 @@ public class Test {
 	@GetMapping("/readFromSheets")
 	public List<List<Object>> readGSheets() throws IOException, GeneralSecurityException {
 		ValueRange response = null;
+		Map<String, String> paramsMap = new HashMap<>();
 		try {
 			Sheets sheetService = gSheetsUtils.getSheetService();
 			String spreadSheetId = sheetId;
@@ -90,7 +104,35 @@ public class Test {
 
 			response = sheetService.spreadsheets().values().get(spreadSheetId, sheetReadRange).execute();
 
-			logger.info("Data From Google Sheets" + response.getValues());
+			List<List<Object>> rawDataFromSheets = response.getValues();
+
+			List<AutoMailerBean> finalData = readDataAndReturnFinalBeans(rawDataFromSheets);
+
+//				get top 10 records whose is_mail_sent flag is 'N'
+			for (int i = 0; i < finalData.size(); i++) {
+				String isMailSent = finalData.get(i).getIsMailSent();
+				if (Constants.N.equalsIgnoreCase(isMailSent)) {
+//				Dynamic params for mail sheets
+					paramsMap.put(Constants.TECH_SKILLS, finalData.get(i).getTechSkills());
+					paramsMap.put(Constants.COMPANY, finalData.get(i).getCompanyName());
+					paramsMap.put(Constants.MOBILE_NUMBER, ibMobileNo);
+					paramsMap.put(Constants.LINKEDIN, linkedin);
+					paramsMap.put(Constants.GITHUB, github);
+
+//					mail shoot 
+					emailService.sendEmail(finalData.get(i).getFromAddress(), finalData.get(i).getToAddress(),
+							resumePath, paramsMap);
+					logger.info("Mail Sent for to Address :- " + finalData.get(i).getToAddress());
+					count++;
+//					update the flag is mail sent in sheets 
+					autoMailerService.updateIsMailSentFlagByToAddress(finalData.get(i).getToAddress(), spreadSheetId,
+							rawDataFromSheets, i);
+
+				}
+			}
+
+			logger.info("All Data From Google Sheets:- " + response.getValues());
+			logger.info("Final List Of beans which needs to be inserted in DB :- " + finalData);
 		} catch (Exception e) {
 			logger.error("Error Occured");
 		}
@@ -99,10 +141,65 @@ public class Test {
 
 	}
 
-//	mail trigger if successfully shoot / failure (phase 2)
-//  read only specified records (configurable - top 10)
 //	connect all features and test all in once
-//	R&D about the deployment in window service/aws
-//	read only the inserted values flag based (last)
+//	R&D about the deployment in window service/aws/railway
+//	mail trigger if successfully shoot / failure (phase 2)
+
+	private List<AutoMailerBean> readDataAndReturnFinalBeans(List<List<Object>> rawData) {
+		List<AutoMailerBean> listOfBeans = new ArrayList<>();
+		List<Object> header = rawData.get(0);
+		int count = 0;
+
+		for (int i = 1; i < rawData.size(); i++) {
+
+			List<Object> row = rawData.get(i);
+			AutoMailerBean bean = new AutoMailerBean();
+
+			for (int j = 0; j < row.size(); j++) {
+				Object headerValue = header.get(j);
+				String actualValue = String.valueOf(row.get(j));
+
+				if (actualValue != null && !(actualValue.equalsIgnoreCase(Constants.EMPTY_STRING))
+						&& headerValue != null
+						&& !(String.valueOf(headerValue).equalsIgnoreCase(Constants.EMPTY_STRING))) {
+					switch (headerValue) {
+					case Constants.FROM_ADDRESS:
+						bean.setFromAddress(actualValue);
+						break;
+
+					case Constants.TO_ADDRESS:
+						bean.setToAddress(actualValue);
+						break;
+
+					case Constants.COMPANY_NAME:
+						bean.setCompanyName(actualValue);
+						break;
+
+					case Constants.TECH_SKILLS:
+						bean.setTechSkills(actualValue);
+						break;
+
+					case Constants.MOBILE_NUMBER:
+						bean.setMobileNumber(actualValue);
+						break;
+
+					case Constants.IS_MAIL_SENT:
+						bean.setIsMailSent(actualValue);
+						break;
+
+					default:
+						break;
+					}
+				}
+				logger.info("Header or Actual Value is Empty");
+			}
+			logger.info("Final Bean With Values:- " + bean.toString());
+			if (bean.getIsMailSent() != null && bean.getIsMailSent().equalsIgnoreCase("N") && count < 10) {
+				listOfBeans.add(bean);
+				count++;
+			}
+		}
+		return listOfBeans;
+	}
 
 }
