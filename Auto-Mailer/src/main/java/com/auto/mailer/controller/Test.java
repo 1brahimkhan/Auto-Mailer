@@ -123,7 +123,6 @@ public class Test {
 					emailService.sendEmail(finalData.get(i).getFromAddress(), finalData.get(i).getToAddress(),
 							resumePath, paramsMap);
 					logger.info("Mail Sent for to Address :- " + finalData.get(i).getToAddress());
-					count++;
 //					update the flag is mail sent in sheets 
 					autoMailerService.updateIsMailSentFlagByToAddress(finalData.get(i).getToAddress(), spreadSheetId,
 							rawDataFromSheets, i);
