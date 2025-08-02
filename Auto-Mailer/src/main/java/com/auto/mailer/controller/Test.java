@@ -160,8 +160,10 @@ public class Test {
 
 				if (actualValue != null && !(actualValue.equalsIgnoreCase(Constants.EMPTY_STRING))
 						&& headerValue != null
-						&& !(String.valueOf(headerValue).equalsIgnoreCase(Constants.EMPTY_STRING))) {
-					switch (headerValue) {
+						&& !(String.valueOf(headerValue).equalsIgnoreCase(Constants.EMPTY_STRING))
+						&& headerValue instanceof String) {
+					String stringHeaderValue = (String) headerValue;
+					switch (stringHeaderValue) {
 					case Constants.FROM_ADDRESS:
 						bean.setFromAddress(actualValue);
 						break;
