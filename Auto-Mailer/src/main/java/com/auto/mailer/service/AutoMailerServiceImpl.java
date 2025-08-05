@@ -11,15 +11,14 @@ import org.springframework.stereotype.Service;
 
 import com.auto.mailer.bean.AutoMailerBean;
 import com.auto.mailer.constants.Constants;
-import com.auto.mailer.dao.AutoMailerDao;
 import com.auto.mailer.utils.GSheetServiceUitls;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 @Service
 public class AutoMailerServiceImpl implements AutoMailerService {
 
-	@Autowired
-	AutoMailerDao autoMailerDao;
+//	@Autowired
+//	AutoMailerDao autoMailerDao;
 
 	@Autowired
 	GSheetServiceUitls gSheetsUtils;
@@ -29,7 +28,7 @@ public class AutoMailerServiceImpl implements AutoMailerService {
 	@Override
 	public void insertDataInDB(AutoMailerBean autoMailerBean) {
 		try {
-			autoMailerDao.save(autoMailerBean);
+//			autoMailerDao.save(autoMailerBean);
 		} catch (Exception e) {
 			logger.error("Error Occurred");
 		}
@@ -37,7 +36,8 @@ public class AutoMailerServiceImpl implements AutoMailerService {
 
 	@Override
 	public boolean existsBytoAddress(String toAddress) {
-		return autoMailerDao.existsBytoAddress(toAddress);
+//		return autoMailerDao.existsBytoAddress(toAddress);
+		return false;
 
 	}
 
