@@ -59,7 +59,7 @@ public class AutoMailerServiceImpl implements AutoMailerService {
 				gSheetsUtils.getSheetService().spreadsheets().values().update(spreadSheetId, isMailSentRange, body)
 						.setValueInputOption("RAW").execute();
 			} catch (IOException | GeneralSecurityException e) {
-				e.printStackTrace();
+				logger.error("Error Occured", e);
 			}
 
 		}

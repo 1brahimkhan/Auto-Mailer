@@ -66,7 +66,7 @@ public class EmailService {
 
 			javaMailSender.send(mimeMessage);
 		} catch (Exception e) {
-			logger.error("Error Occured");
+			logger.error("Error Occured", e);
 		}
 
 	}
@@ -81,7 +81,7 @@ public class EmailService {
 			}
 
 		} catch (IOException e) {
-			logger.error("Error Occurred");
+			logger.error("Error Occurred", e);
 		}
 		return mailBody;
 	}
@@ -97,7 +97,7 @@ public class EmailService {
 			helper.setText(body);
 			helper.setCc("chetan.kandarkar99@gmail.com");
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			logger.error("Error Occured", e);
 		}
 
 		javaMailSender.send(mimeMessage);
