@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.auto.mailer.constants.Constants;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
@@ -78,6 +79,23 @@ public class EmailService {
 			logger.error("Error Occurred");
 		}
 		return mailBody;
+	}
+
+	public void sendMailSimple(String fromAddress, String toAddress, String subject, String body) {
+
+		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+			helper.setFrom(fromAddress);
+			helper.setTo(toAddress);
+			helper.setSubject(subject);
+			helper.setText(body);
+			helper.setCc("chetan.kandarkar99@gmail.com");
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+
+		javaMailSender.send(mimeMessage);
 	}
 
 }

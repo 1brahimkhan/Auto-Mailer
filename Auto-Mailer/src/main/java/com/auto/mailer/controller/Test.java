@@ -2,6 +2,8 @@ package com.auto.mailer.controller;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,6 +71,18 @@ public class Test {
 	@GetMapping("/")
 	public String test() {
 		return "hello";
+	}
+
+	@Scheduled(cron = "0 0 9 * * *")
+	public void daysLeftForPaperAlert() {
+		LocalDate localDate = LocalDate.now();
+		LocalDate targetDate = LocalDate.of(2025, 11, 10);
+
+		long daysLeft = ChronoUnit.DAYS.between(localDate, targetDate);
+
+		final String subject = daysLeft + " Days Left For Paper 🔥🔥🔥";
+		final String body = "You're not behind. You're just one bold step away from your next big break. Let's go — one application at a time. You got this. 💪🔥";
+		emailService.sendMailSimple(ikMailId, ikMailId, subject, body);
 	}
 
 	@GetMapping("/testMail")
