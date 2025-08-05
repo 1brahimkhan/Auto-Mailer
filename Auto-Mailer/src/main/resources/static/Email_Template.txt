@@ -1,0 +1,16 @@
+Dear HR Team at {{company_name}},
+
+I hope this message finds you well.
+
+I am reaching out to express my keen interest in the Java Spring Boot Developer role at {{company_name}}. With over 3 years of hands-on experience in {{tech_skills}}, 
+
+I am passionate about delivering clean, maintainable code and learning continuously to bring the best solutions forward. {{company_name}}’s innovative approach in the technology space truly inspires me, and I would love to be a part of your growth journey.
+
+Please find my resume attached. I would be grateful for the opportunity to discuss how I can contribute to your esteemed organization.
+
+Looking forward to hearing from you.
+
+Warm regards,
+Contact:- {{mobile_number}}
+LinkedIn: - {{linked_in}}
+Github: - {{github}}

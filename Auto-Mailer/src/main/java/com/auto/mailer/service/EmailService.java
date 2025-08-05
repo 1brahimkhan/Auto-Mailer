@@ -1,6 +1,5 @@
 package com.auto.mailer.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,7 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,12 @@ public class EmailService {
 			helper.setText(finalMailBody);
 
 //			for attachments (resume)
-			FileSystemResource file = new FileSystemResource(new File(attachmentPath));
+//			For Dynamic
+			Resource file = new ClassPathResource(attachmentPath);
+
+//			For Local
+//			FileSystemResource file = new FileSystemResource(new File(attachmentPath));
+
 			if (file.exists()) {
 				helper.addAttachment(file.getFilename(), file);
 			} else {
