@@ -1,8 +1,8 @@
 package com.auto.mailer.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -74,7 +74,10 @@ public class EmailService {
 	private String getEmailBody(String mailTemplatePath, Map<String, String> paramsMap) {
 		String mailBody = null;
 		try {
-			mailBody = Files.readString(Paths.get(mailTemplatePath));
+			Resource file = new ClassPathResource(mailTemplatePath);
+			try (InputStream inputStream = file.getInputStream()) {
+				mailBody = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+			}
 
 			for (Map.Entry<String, String> entrySet : paramsMap.entrySet()) {
 				mailBody = mailBody.replace("{{" + entrySet.getKey() + "}}", entrySet.getValue());

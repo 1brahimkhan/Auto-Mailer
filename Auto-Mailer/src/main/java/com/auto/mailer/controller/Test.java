@@ -73,7 +73,12 @@ public class Test {
 		return "hello";
 	}
 
-	@Scheduled(cron = "0 0 11 * * ?")
+	@Scheduled(cron = "0 0/14 * * * ?")
+	public void callPaperMethod() {
+		logger.info("This method will run every 14 minutes to avoid in activity while deployment");
+	}
+
+	@Scheduled(cron = "0 0 9 * * ?")
 	public void daysLeftForPaperAlert() {
 		LocalDate localDate = LocalDate.now();
 		LocalDate targetDate = LocalDate.of(2025, 11, 10);
