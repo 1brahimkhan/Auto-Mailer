@@ -73,8 +73,8 @@ public class Test {
 		return "hello";
 	}
 
-	@Scheduled(cron = "0 0/14 * * * ?")
-	public void callPaperMethod() {
+	@Scheduled(cron = "0 0/9 * * * ?")
+	public void keepAliveMethod() {
 		logger.info("This method will run every 14 minutes to avoid in activity while deployment");
 	}
 
