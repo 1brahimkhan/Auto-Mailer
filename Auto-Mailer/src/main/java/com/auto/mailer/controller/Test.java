@@ -73,7 +73,7 @@ public class Test {
 		return "hello";
 	}
 
-	@Scheduled(cron = "0 0 9 * * *")
+	@Scheduled(cron = "0 0 11 * * ?")
 	public void daysLeftForPaperAlert() {
 		LocalDate localDate = LocalDate.now();
 		LocalDate targetDate = LocalDate.of(2025, 11, 10);
