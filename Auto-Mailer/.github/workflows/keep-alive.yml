@@ -1,0 +1,19 @@
+name: Keep Alive Service
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the service to prevent idle timeout
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" https://auto-mailer-gy0w.onrender.com/)
+          echo "Response status: $status"
+          if [ "$status" -ne 200 ]; then
+            echo "PING FAILED with status $status" >&2
+            exit 1
+          fi
