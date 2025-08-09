@@ -2,9 +2,9 @@ name: Keep Alive Service
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
-  pull_request: 
-  workflow_dispatch: 
+    - cron: '*/10 * * * *'     # Runs every 10 minutes (UTC)
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   ping-service:
