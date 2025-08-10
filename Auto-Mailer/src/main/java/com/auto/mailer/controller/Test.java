@@ -81,7 +81,7 @@ public class Test {
 	}
 
 	@GetMapping("/paper")
-	public void daysLeftForPaperAlert() {
+	public String daysLeftForPaperAlert() {
 		LocalDate localDate = LocalDate.now();
 		LocalDate targetDate = LocalDate.of(2025, 11, 10);
 
@@ -90,6 +90,7 @@ public class Test {
 		final String subject = daysLeft + " Days Left For Paper 🔥🔥🔥";
 		final String body = "You're not behind. You're just one bold step away from your next big break. Let's go — one application at a time. You got this. 💪🔥";
 		emailService.sendMailSimple(ikMailId, ikMailId, subject, body);
+		return "Mail Sent, Check your Inbox :)";
 	}
 
 	@GetMapping("/testMail")
