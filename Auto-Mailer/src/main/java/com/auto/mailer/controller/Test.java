@@ -73,12 +73,14 @@ public class Test {
 		return "hello";
 	}
 
-	@Scheduled(cron = "0 0/9 * * * ?")
+//	@Scheduled(cron = "0 0/9 * * * ?")
+// to run the method post start up every 9 minutes
+	@Scheduled(fixedRate = 9 * 60 * 1000) // every 9 minutes
 	public void keepAliveMethod() {
-		logger.info("This method will run every 14 minutes to avoid in activity while deployment");
+		logger.info("This method will run every 9 minutes to avoid in activity while deployment");
 	}
 
-	@Scheduled(cron = "0 0 9 * * ?")
+	@GetMapping("/paper")
 	public void daysLeftForPaperAlert() {
 		LocalDate localDate = LocalDate.now();
 		LocalDate targetDate = LocalDate.of(2025, 11, 10);
