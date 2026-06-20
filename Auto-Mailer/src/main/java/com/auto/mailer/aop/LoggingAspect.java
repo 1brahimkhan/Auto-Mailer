@@ -27,7 +27,7 @@ public class LoggingAspect {
 	}
 
 	@AfterThrowing(pointcut = "execution(* com.auto.mailer..*(..))", throwing = "exception")
-	public void logException(JoinPoint joinPoint, Object exception) {
+	public void logException(JoinPoint joinPoint, Throwable exception) {
 		logger.error("💥 Exception in: {} with parameters {} and exception = {}", joinPoint.getSignature(),
 				joinPoint.getArgs(), exception);
 	}

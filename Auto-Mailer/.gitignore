@@ -2,3 +2,7 @@
 /target/
 /.apt_generated/
 /.apt_generated_tests/
+.classpath
+.project
+.prefs
+.log

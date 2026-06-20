@@ -38,6 +38,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -68,6 +74,12 @@
 		<dependency>
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-aop</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!--to bind the values from pom.xml post to request body in controller-->
 		<dependency>
@@ -99,6 +111,12 @@
 		    <artifactId>google-http-client-jackson2</artifactId>
     		<version>1.43.3</version> 	
 		</dependency>
+		<dependency>
+    <groupId>com.sendgrid</groupId>
+    <artifactId>sendgrid-java</artifactId>
+    <version>4.10.2</version>
+</dependency>
+
 	</dependencies>
 
 	<build>

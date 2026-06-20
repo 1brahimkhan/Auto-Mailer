@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,15 @@ import com.auto.mailer.service.EmailService;
 import com.auto.mailer.utils.GSheetServiceUitls;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
+import com.sendgrid.helpers.mail.objects.Personalization;
+
+import jakarta.annotation.PostConstruct;
 
 @RestController
 public class Test {
@@ -38,6 +48,9 @@ public class Test {
 
 	@Autowired
 	GSheetServiceUitls gSheetsUtils;
+
+	@Autowired
+	private Environment env;
 
 	private static final Logger logger = LogManager.getLogger(Test.class);
 
@@ -68,6 +81,9 @@ public class Test {
 	@Value("${auto.mailer.mobile}")
 	private String ibMobileNo;
 
+//	@Value("${send.grid.api.key}")
+//	private String sendGridApiKey;
+
 	@GetMapping("/")
 	public String test() {
 		return "hello";
@@ -83,13 +99,30 @@ public class Test {
 	@GetMapping("/paper")
 	public String daysLeftForPaperAlert() {
 		LocalDate localDate = LocalDate.now();
-		LocalDate targetDate = LocalDate.of(2025, 11, 10);
+		LocalDate targetDate = LocalDate.of(2027, 02, 18);
 
 		long daysLeft = ChronoUnit.DAYS.between(localDate, targetDate);
-
+		Email fromEmail = new Email(ikMailId);
+		Email toEmail = new Email(ikMailId);
 		final String subject = daysLeft + " Days Left For Paper 🔥🔥🔥";
 		final String body = "You're not behind. You're just one bold step away from your next big break. Let's go — one application at a time. You got this. 💪🔥";
+		Content content = new Content("text/plain", body);
+		Mail mail = new Mail(fromEmail, subject, toEmail, content);
+		Personalization personalization = mail.getPersonalization().get(0);
+		personalization.addCc(new Email("chetan.kandarkar99@gmail.com"));
+
+		SendGrid sg = new SendGrid("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");
+		Request request = new Request();
+		try {
+			request.setMethod(Method.POST);
+			request.setEndpoint("mail/send");
+			request.setBody(mail.build());
+			sg.api(request);
+		} catch (IOException e) {
+			logger.error("Error sending mail via SendGrid", e);
+		}
 		emailService.sendMailSimple(ikMailId, ikMailId, subject, body);
+
 		return "Mail Sent, Check your Inbox :)";
 	}
 
