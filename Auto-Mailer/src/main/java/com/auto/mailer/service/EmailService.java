@@ -16,6 +16,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.auto.mailer.constants.Constants;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
+import com.sendgrid.helpers.mail.objects.Personalization;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -104,6 +112,39 @@ public class EmailService {
 		}
 
 		javaMailSender.send(mimeMessage);
+	}
+
+	public void sendEmailViaSendGrid(String fromAddress, String toAddress, String subject, String body) {
+		try {
+			Email from = new Email(fromAddress);
+			Email to = new Email(toAddress);
+
+			Content content = new Content("text/plain", body);
+			Mail mail = new Mail(from, subject, to, content);
+			// Add personalization with TO and CC
+			Personalization personalization = new Personalization();
+			personalization.addTo(to);
+//			personalization.addCc(new Email("chetan.kandarkar99@gmail.com"));
+			mail.addPersonalization(personalization);
+			SendGrid sg = new SendGrid("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");
+			Request request = new Request();
+
+			request.setMethod(Method.POST);
+			request.setEndpoint("mail/send");
+			request.setBody(mail.build());
+
+			Response response = sg.api(request);
+			logger.info("SendGrid email sent. Status: {}", response.getStatusCode());
+
+			if (response.getStatusCode() >= 400) {
+				logger.error("SendGrid error: {}", response.getBody());
+				throw new RuntimeException("SendGrid API error: " + response.getStatusCode());
+			}
+
+		} catch (IOException e) {
+			logger.error("SendGrid email failed", e);
+			throw new RuntimeException("Failed to send email via SendGrid", e);
+		}
 	}
 
 }

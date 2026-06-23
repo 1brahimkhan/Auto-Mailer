@@ -3,6 +3,8 @@ package com.auto.mailer.controller;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.auto.mailer.bean.AutoMailerBean;
 import com.auto.mailer.constants.Constants;
@@ -27,15 +30,6 @@ import com.auto.mailer.service.EmailService;
 import com.auto.mailer.utils.GSheetServiceUitls;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
-import com.sendgrid.helpers.mail.objects.Personalization;
-
-import jakarta.annotation.PostConstruct;
 
 @RestController
 public class Test {
@@ -102,28 +96,48 @@ public class Test {
 		LocalDate targetDate = LocalDate.of(2027, 02, 18);
 
 		long daysLeft = ChronoUnit.DAYS.between(localDate, targetDate);
-		Email fromEmail = new Email(ikMailId);
-		Email toEmail = new Email(ikMailId);
-		final String subject = daysLeft + " Days Left For Paper 🔥🔥🔥";
-		final String body = "You're not behind. You're just one bold step away from your next big break. Let's go — one application at a time. You got this. 💪🔥";
-		Content content = new Content("text/plain", body);
-		Mail mail = new Mail(fromEmail, subject, toEmail, content);
-		Personalization personalization = mail.getPersonalization().get(0);
-		personalization.addCc(new Email("chetan.kandarkar99@gmail.com"));
+		final String subject = daysLeft + " Days Left For Paper";
+		final String body = "You're not behind. You're just one bold step away from your next big break. Let's go — one application at a time. You got this.";
 
-		SendGrid sg = new SendGrid("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");
-		Request request = new Request();
+		// Generate current datetime in format: 210626205018 (YYMMDDHHMMSS)
+		LocalDateTime now = LocalDateTime.now();
+		String currentDateTime = now.format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
+
+		// Google Apps Script URL
+		String googleScriptUrl = "https://script.google.com/macros/s/AKfycby9JFkVwnbLNRjx0rvF53c-d5zkAPTMu0uMaHWRcZ7iA6-cmP5mu4aWw0Pj0ceN7iD_/exec";
+
 		try {
-			request.setMethod(Method.POST);
-			request.setEndpoint("mail/send");
-			request.setBody(mail.build());
-			sg.api(request);
-		} catch (IOException e) {
-			logger.error("Error sending mail via SendGrid", e);
-		}
-		emailService.sendMailSimple(ikMailId, ikMailId, subject, body);
+			// Create RestTemplate
+			RestTemplate restTemplate = new RestTemplate();
 
-		return "Mail Sent, Check your Inbox :)";
+			// Create request body as String for text/plain
+			String requestBody = currentDateTime;
+			System.out.println("currentDateTime" + currentDateTime);
+
+			// Set headers
+			org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+			headers.setContentType(org.springframework.http.MediaType.TEXT_PLAIN);
+
+			// Create HTTP entity with body and headers
+			org.springframework.http.HttpEntity<String> request = new org.springframework.http.HttpEntity<>(
+					requestBody, headers);
+
+			// Call Google Apps Script with POST method
+			String apiResponse = restTemplate.postForObject(googleScriptUrl, request, String.class);
+			logger.info("apiResponse" + apiResponse);
+			logger.info("Google Apps Script called successfully. DateTime: {}, Response: {}", currentDateTime,
+					apiResponse);
+
+			// Send email
+//			emailService.sendEmailViaSendGrid(ikMailId, ikMailId, subject, body);
+
+			return "Mail Sent & Google Script Called. DateTime: " + currentDateTime + ", Check your Inbox :)";
+
+		} catch (Exception e) {
+			logger.error("Error calling Google Apps Script", e);
+
+			return "Mail Sent but Google Script failed. Check your Inbox :)";
+		}
 	}
 
 	@GetMapping("/testMail")
