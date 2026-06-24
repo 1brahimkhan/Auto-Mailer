@@ -119,8 +119,8 @@ public class Test {
 			headers.setContentType(org.springframework.http.MediaType.TEXT_PLAIN);
 
 			// Create HTTP entity with body and headers
-			org.springframework.http.HttpEntity<String> request = new org.springframework.http.HttpEntity<>(
-					requestBody, headers);
+			org.springframework.http.HttpEntity<String> request = new org.springframework.http.HttpEntity<>(requestBody,
+					headers);
 
 			// Call Google Apps Script with POST method
 			String apiResponse = restTemplate.postForObject(googleScriptUrl, request, String.class);
@@ -136,7 +136,7 @@ public class Test {
 		} catch (Exception e) {
 			logger.error("Error calling Google Apps Script", e);
 
-			return "Mail Sent but Google Script failed. Check your Inbox :)";
+			return "Request Receieved";
 		}
 	}
 
