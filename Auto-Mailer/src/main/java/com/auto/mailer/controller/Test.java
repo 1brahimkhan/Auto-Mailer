@@ -90,7 +90,7 @@ public class Test {
 		logger.info("This method will run every 9 minutes to avoid in activity while deployment");
 	}
 
-	@GetMapping("/paper")
+	@PostMapping("/paper")
 	public String daysLeftForPaperAlert() {
 		LocalDate localDate = LocalDate.now();
 		LocalDate targetDate = LocalDate.of(2027, 02, 18);
