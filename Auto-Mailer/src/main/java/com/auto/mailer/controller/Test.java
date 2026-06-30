@@ -91,7 +91,7 @@ public class Test {
 	}
 
 	@PostMapping("/paper")
-	public String daysLeftForPaperAlert() {
+	public String daysLeftForPaperAlert(@RequestBody String datetime) {
 		LocalDate localDate = LocalDate.now();
 		LocalDate targetDate = LocalDate.of(2027, 02, 18);
 
@@ -111,7 +111,7 @@ public class Test {
 			RestTemplate restTemplate = new RestTemplate();
 
 			// Create request body as String for text/plain
-			String requestBody = currentDateTime;
+			String requestBody = datetime;
 			System.out.println("currentDateTime" + currentDateTime);
 
 			// Set headers
@@ -131,7 +131,7 @@ public class Test {
 			// Send email
 //			emailService.sendEmailViaSendGrid(ikMailId, ikMailId, subject, body);
 
-			return "Mail Sent & Google Script Called. DateTime: " + currentDateTime + ", Check your Inbox :)";
+			return "Request Receieved";
 
 		} catch (Exception e) {
 			logger.error("Error calling Google Apps Script", e);
