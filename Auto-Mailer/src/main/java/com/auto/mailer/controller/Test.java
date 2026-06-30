@@ -136,7 +136,7 @@ public class Test {
 		} catch (Exception e) {
 			logger.error("Error calling Google Apps Script", e);
 
-			return "Request Receieved";
+			return "Request Received";
 		}
 	}
 
