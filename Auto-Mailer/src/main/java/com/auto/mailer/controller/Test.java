@@ -131,7 +131,7 @@ public class Test {
 			// Send email
 //			emailService.sendEmailViaSendGrid(ikMailId, ikMailId, subject, body);
 
-			return "Request Receieved";
+			return "Request Received";
 
 		} catch (Exception e) {
 			logger.error("Error calling Google Apps Script", e);
